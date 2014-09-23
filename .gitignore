@@ -1,0 +1,7 @@
+# Ignore Eclipse files
+.project
+.settings
+.pydevproject
+
+# Compiled Python scripts
+*.pyc
