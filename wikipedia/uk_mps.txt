@@ -1,0 +1,4 @@
+# To fetch categories, prefix with Category:
+# Note the UK MPs list has a m-dash at the end, not a hyphen!
+Category:UK_MPs_2010–
+
