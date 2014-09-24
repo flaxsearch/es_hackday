@@ -21,10 +21,12 @@ import os
 import re
 import requests
 import sys
+import time
 import xml.etree.ElementTree as ET
 
 ES_URL = 'http://localhost:9200/wikipedia/revisions'
 HEADERS = { 'ContentType': 'application/json' }
+MAX_RETRIES = 5
 
 class FileHandler:
     
@@ -58,12 +60,23 @@ def index_file(filepath):
     fh = FileHandler(filepath)
     i = 0
     for rev in fh.get_revision():
-        url = '{0}/{1}'.format(ES_URL, rev['revision_id'])
-        r = requests.put(url, data=json.dumps(rev), headers=HEADERS)
-        if r.status_code >= 400:
-            print '*** Unexpected status code from ES: %d - %s' % (r.status_code, r.text)
-            sys.exit(1)
-        i += 1
+        attempts = 0
+        while attempts < MAX_RETRIES:
+            try:
+                url = '{0}/{1}'.format(ES_URL, rev['revision_id'])
+                r = requests.put(url, data=json.dumps(rev), headers=HEADERS)
+                if r.status_code >= 400:
+                    print '*** Unexpected status code from ES: %d - %s' % (r.status_code, r.text)
+                    sys.exit(1)
+                i += 1
+                attempts = MAX_RETRIES
+            except requests.exceptions.ConnectionError as e:
+                attempts += 1
+                print '*** Connection exception from ES - attempt #%d' % attempts
+                if attempts == MAX_RETRIES:
+                    print '*** Too many connection errors - aborting'
+                    sys.exit(1)
+                time.sleep(5)
     return i    
         
 
