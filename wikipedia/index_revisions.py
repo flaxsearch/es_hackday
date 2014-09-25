@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import dewiki.parser
 import json
 import optparse
 import os
@@ -38,20 +39,24 @@ class FileHandler:
         self.root = ET.fromstring(text)
         self.page_title = self.root.findtext('./page/title')
         self.page_id = self.root.findtext('./page/id')
+        self.dewiki = dewiki.parser.Parser()
         
     def get_revision(self):
         """ Return a generator returning each revision in the file. """
         for revision in self.root.findall('./page/revision'):
+            text = self.dewiki.parse_string(revision.findtext('text'))
             data = { 'page_id': self.page_id, 'page_title': self.page_title,
                     'timestamp': revision.findtext('timestamp'),
                     'comment': revision.findtext('comment'),
-                    'revision_id': revision.findtext('id') }
+                    'revision_id': revision.findtext('id'),
+                    'text': text,
+                    'contributor': {}}
             # Contributors have either username+id or ip address
             if revision.find('./contributor/username') is not None:
-                data['contributor_username'] = revision.findtext('./contributor/username')
-                data['contributor_id'] = revision.findtext('./contributor/id')
+                data['contributor']['username'] = revision.findtext('./contributor/username')
+                data['contributor']['id'] = revision.findtext('./contributor/id')
             if revision.find('./contributor/ip') is not None:
-                data['contributor_ip'] = revision.findtext('./contributor/ip')
+                data['contributor']['ip'] = revision.findtext('./contributor/ip')
             yield data
                 
 
