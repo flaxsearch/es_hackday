@@ -1,4 +1,4 @@
-var currentLocation, total = 0;
+var currentLocation, total = 0, map, marker;
 function setLocationLabel(lat, lon) {
     $('#current-location').html('You\'re at ' + lat.toFixed(4) + ', ' + lon.toFixed(4));
 }
@@ -45,6 +45,16 @@ $(document).ready(function () {
     total = 1380876;
     query = buildQuery();
     setLocationBySensor(query);
+    $('#address-lookup').submit(function () {
+        geocodeAddress($('#address-input').val(), function (data) {
+            var loc = data.results[0].geometry.location;
+            var location = new google.maps.LatLng(loc.lat, loc.lng);
+            setLocationByGoogleMaps(location);
+            placeMarker(location, map, marker);
+            map.panTo(location);
+        });
+        return false;
+    });
 });
 
 
@@ -133,10 +143,10 @@ function showMap(lat, lon) {
     };
 
 
-    var map = new google.maps.Map(document.getElementById('map-canvas'),
+    map = new google.maps.Map(document.getElementById('map-canvas'),
     mapOptions);
 
-    var marker = new google.maps.Marker({
+    marker = new google.maps.Marker({
         position: myLatlng,
         map: map,
         title:"You are here!"
@@ -151,4 +161,12 @@ function showMap(lat, lon) {
 
 function placeMarker(latLng, map, marker) {
     marker.setPosition(latLng)
+}
+
+function geocodeAddress(address, successCb) {
+    $.ajax(
+    'http://maps.googleapis.com/maps/api/geocode/json?address='+ address,
+    {
+        success: successCb
+    });
 }
