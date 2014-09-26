@@ -1,9 +1,12 @@
 var currentLocation, total = 0;
+function setLocationLabel(lat, lon) {
+    $('#current-location').html('You\'re at ' + lat.toFixed(4) + ', ' + lon.toFixed(4));
+}
 function setLocationBySensor(query) {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (position) {
-            $('#current-location').html('You\'re at ' + position.coords.latitude  +', ' + position.coords.longitude);
-			addLocationFilter(query, position.coords.latitude, position.coords.longitude);
+            setLocationLabel(position.coords.latitude, position.coords.longitude);
+            addLocationFilter(query, position.coords.latitude, position.coords.longitude);
             console.log(query);
             showMap(position.coords.latitude, position.coords.longitude);
             geocodeGps(position.coords.latitude, position.coords.longitude);
@@ -31,7 +34,7 @@ function addLocationFilter(query, lat, lon) {
 function setLocationByGoogleMaps(latlng)
 {
 	var query = buildQuery();
-    $('#current-location').html('You\'re at ' + latlng.lat() +', ' + latlng.lng());
+    setLocationLabel(latlng.lat(), latlng.lng());
 	addLocationFilter(query, latlng.lat(), latlng.lng());
 	console.log(query);
 	getResults(query, displayResults);
@@ -103,8 +106,8 @@ function displayResults(data) {
         var globalRate = (item.bg_count / total);
         console.log('doc_count', 'local', 'bg_count', 'total', 'rates...');
         console.log(item.doc_count, localTotal, item.bg_count, total, Math.round(localRate*100), Math.round(globalRate*100));
-        var css_class = (( localRate > globalRate) ? 'bigger' : 'smaller');
-        $('#significant-crimes').append('<li class="' + css_class + '">' + item.key + ': ' + Math.round(localRate/globalRate*100) + '%</li>');
+        var css_class = (( localRate > globalRate) ? 'label label-danger' : 'label label-success');
+        $('#significant-crimes').append('<li>' + item.key + ': <span class="' + css_class + '">' + Math.round(localRate/globalRate*100) + '%</span></li>');
     });
 }
 
@@ -141,6 +144,7 @@ function showMap(lat, lon) {
 
     google.maps.event.addListener(map, 'click', function(event) {
         placeMarker(event.latLng, map, marker);
+        map.panTo(event.latLng);
 		setLocationByGoogleMaps(event.latLng);
     });
 }

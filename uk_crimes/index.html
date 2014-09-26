@@ -2,31 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ES</title>
     <script src="jquery-2.1.1.js"></script>
     <script src="app.js"></script>
     <script type="text/javascript"
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChufjCVNlIUmAEpIiPyTAwiST_Dmx3cQw">
     </script>
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap-theme.css" rel="stylesheet">
     <style>
         .bigger {
-            color:red;
+            color: red;
         }
+
         .smaller {
-            color:green;
+            color: green;
         }
+
         #map-canvas {
-            width: 320px;
             height: 240px;
         }
     </style>
 </head>
 <body>
+<div class="container-fluid">
     <!--<form id="search"><input id="q"></form>-->
     <h1>Your current location compared to national average</h1>
-    <h2 id="current-location"></h2><span id="address"></span>
-<div id="container"></div>
-<div id="significant-crimes"></div>
-<div id="map-canvas"></div>
+
+    <h2><span id="current-location">Getting location...</span> (<span id="address">Loading...</span>)</h2>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div id="significant-crimes"></div>
+        </div>
+        <div class="col-md-8">
+            <form role="form">
+                <div class="form-group">
+                    <label>Pick from map</label>
+                    <div id="map-canvas"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 </html>
