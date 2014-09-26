@@ -13,6 +13,7 @@ function getLocation() {
                 }
             };
             console.log(query);
+            geocodeGps(position);
             getResults(query, displayResults);
         });
     } else {
@@ -83,4 +84,18 @@ function displayResults(data) {
         var css_class = (( localRate > globalRate) ? 'bigger' : 'smaller');
         $('#significant-crimes').append('<li class="' + css_class + '">' + item.key + ': ' + Math.round(localRate/globalRate*100) + '%</li>');
     });
+}
+
+function geocodeGps(position) {
+    $.ajax(
+    'http://maps.googleapis.com/maps/api/geocode/json?latlng='+ position.coords.latitude+','+position.coords.longitude+'',
+    {
+        success: function (data) {
+            console.log(data);
+            var addressComponents = data.results[0].address_components;
+            var address = addressComponents[0].long_name + ' ' + addressComponents[1].long_name + ' ' + addressComponents[2].long_name;
+            $('#address').html(address);
+        }
+    });
+
 }
