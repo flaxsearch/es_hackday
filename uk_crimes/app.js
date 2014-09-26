@@ -1,4 +1,4 @@
-var currentLocation, total = 0, map, marker;
+var currentLocation, total = 0, map, marker, circle;
 function setLocationLabel(lat, lon) {
     $('#current-location').html('You\'re at ' + lat.toFixed(4) + ', ' + lon.toFixed(4));
 }
@@ -152,6 +152,18 @@ function showMap(lat, lon) {
         title:"You are here!"
     });
 
+    circle = new google.maps.Circle({
+        center: myLatlng,
+        radius: 1000,
+        map: map,
+        strokeColor: '#FF0000',
+        strokeOpacity: 0.2,
+        strokeWeight: 2,
+        fillColor: '#FF0000',
+        fillOpacity: 0.05
+    });
+
+
     google.maps.event.addListener(map, 'click', function(event) {
         placeMarker(event.latLng, map, marker);
         map.panTo(event.latLng);
@@ -159,8 +171,9 @@ function showMap(lat, lon) {
     });
 }
 
-function placeMarker(latLng, map, marker) {
-    marker.setPosition(latLng)
+function placeMarker(latLng) {
+    marker.setPosition(latLng);
+    circle.setCenter(latLng);
 }
 
 function geocodeAddress(address, successCb) {
