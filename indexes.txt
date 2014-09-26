@@ -1,3 +1,4 @@
 http://84.40.61.83:9200/shakespeare/_search?q=kingdom+horse
 http://84.40.61.82:9200/ukcrimes/_search?query=car
+http://host01.walaitki.com:9200/_plugin/marvel/sense/index.html
 
