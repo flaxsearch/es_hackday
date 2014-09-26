@@ -5,12 +5,19 @@
     <title>ES</title>
     <script src="jquery-2.1.1.js"></script>
     <script src="app.js"></script>
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChufjCVNlIUmAEpIiPyTAwiST_Dmx3cQw">
+    </script>
     <style>
         .bigger {
             color:red;
         }
         .smaller {
             color:green;
+        }
+        #map-canvas {
+            width: 320px;
+            height: 240px;
         }
     </style>
 </head>
@@ -20,5 +27,6 @@
     <h2 id="current-location"></h2><span id="address"></span>
 <div id="container"></div>
 <div id="significant-crimes"></div>
+<div id="map-canvas"></div>
 </body>
 </html>

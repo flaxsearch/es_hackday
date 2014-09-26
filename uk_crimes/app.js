@@ -1,5 +1,5 @@
 var currentLocation, total = 0, query = {};
-function getLocation() {
+function setLocationBySensor() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (position) {
             $('#current-location').html('You\'re at ' + position.coords.latitude  +', ' + position.coords.longitude);
@@ -13,12 +13,18 @@ function getLocation() {
                 }
             };
             console.log(query);
+            showMap(position.coords.latitude, position.coords.longitude);
             geocodeGps(position);
             getResults(query, displayResults);
         });
     } else {
         alert('can\'t geolocate');
     }
+}
+
+function setLocationByGoogleMaps()
+{
+
 }
 
 $(document).ready(function () {
@@ -54,7 +60,7 @@ $(document).ready(function () {
             }
         }
     };
-    getLocation();
+    setLocationBySensor();
 });
 
 
@@ -98,4 +104,31 @@ function geocodeGps(position) {
         }
     });
 
+}
+
+function showMap(lat, lon) {
+    var myLatlng = new google.maps.LatLng(lat, lon);
+
+    var mapOptions = {
+        center: myLatlng,
+        zoom: 12
+    };
+
+
+    var map = new google.maps.Map(document.getElementById('map-canvas'),
+    mapOptions);
+
+    var marker = new google.maps.Marker({
+        position: myLatlng,
+        map: map,
+        title:"You are here!"
+    });
+
+    google.maps.event.addListener(map, 'click', function(event) {
+        placeMarker(event.latLng, map, marker);
+    });
+}
+
+function placeMarker(latLng, map, marker) {
+    marker.setPosition(latLng)
 }
