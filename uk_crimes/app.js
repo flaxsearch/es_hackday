@@ -1,17 +1,9 @@
-var currentLocation, total = 0, query = {};
-function setLocationBySensor() {
+var currentLocation, total = 0;
+function setLocationBySensor(query) {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (position) {
             $('#current-location').html('You\'re at ' + position.coords.latitude  +', ' + position.coords.longitude);
-            query.query.filtered.filter = {
-                "geo_distance": {
-                    "distance": "1km",
-                    "location": {
-                        "lat": position.coords.latitude,
-                        "lon": position.coords.longitude
-                    }
-                }
-            };
+			addLocationFilter(query, position.coords.latitude, position.coords.longitude);
             console.log(query);
             showMap(position.coords.latitude, position.coords.longitude);
             geocodeGps(position);
@@ -22,18 +14,40 @@ function setLocationBySensor() {
     }
 }
 
-function setLocationByGoogleMaps()
-{
 
+function addLocationFilter(query, lat, lon) {
+    query.query.filtered.filter = {
+        "geo_distance": {
+            "distance": "1km",
+            "location": {
+                "lat": lat,
+                "lon": lon
+            }
+        }
+    };
+}
+
+
+function setLocationByGoogleMaps(latlng)
+{
+	var query = buildQuery();
+	addLocationFilter(query, latlng.lat(), latlng.lng());
+	console.log(query);
+	getResults(query, displayResults);
 }
 
 $(document).ready(function () {
     total = 1380876;
+    query = buildQuery();
+    setLocationBySensor(query);
+});
+
+
+function buildQuery() {
     var date = new Date();
     var year = date.getFullYear()-1;
     var month = date.getUTCMonth()+1;
     var day = date.getDate();
-    console.log(year, month, day);
     query = {
         "query" : {
             "filtered" : {
@@ -45,7 +59,6 @@ $(document).ready(function () {
                     }
                 }
             }
-            //"match_all" : {}
         },
         "aggregations": {
             "crimeType": {
@@ -60,8 +73,8 @@ $(document).ready(function () {
             }
         }
     };
-    setLocationBySensor();
-});
+	return query;
+}
 
 
 function getResults(query, success) {
@@ -80,6 +93,7 @@ function getResults(query, success) {
 
 function displayResults(data) {
     console.log(data);
+	$('#significant-crimes').html('');
     $('#container').html('<div><ul id="results"></ul></div>');
     var localTotal = data.aggregations.significantCrimeTypes.doc_count;
     $.each(data.aggregations.significantCrimeTypes.buckets, function (index, item) {
@@ -126,6 +140,7 @@ function showMap(lat, lon) {
 
     google.maps.event.addListener(map, 'click', function(event) {
         placeMarker(event.latLng, map, marker);
+		setLocationByGoogleMaps(event.latLng);
     });
 }
 
