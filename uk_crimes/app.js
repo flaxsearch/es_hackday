@@ -6,7 +6,7 @@ function setLocationBySensor(query) {
 			addLocationFilter(query, position.coords.latitude, position.coords.longitude);
             console.log(query);
             showMap(position.coords.latitude, position.coords.longitude);
-            geocodeGps(position);
+            geocodeGps(position.coords.latitude, position.coords.longitude);
             getResults(query, displayResults);
         });
     } else {
@@ -31,9 +31,11 @@ function addLocationFilter(query, lat, lon) {
 function setLocationByGoogleMaps(latlng)
 {
 	var query = buildQuery();
+    $('#current-location').html('You\'re at ' + latlng.lat() +', ' + latlng.lng());
 	addLocationFilter(query, latlng.lat(), latlng.lng());
 	console.log(query);
 	getResults(query, displayResults);
+	geocodeGps(latlng.lat(), latlng.lng());
 }
 
 $(document).ready(function () {
@@ -106,9 +108,9 @@ function displayResults(data) {
     });
 }
 
-function geocodeGps(position) {
+function geocodeGps(lat, lon) {
     $.ajax(
-    'http://maps.googleapis.com/maps/api/geocode/json?latlng='+ position.coords.latitude+','+position.coords.longitude+'',
+    'http://maps.googleapis.com/maps/api/geocode/json?latlng='+ lat+','+lon+'',
     {
         success: function (data) {
             console.log(data);
@@ -117,7 +119,6 @@ function geocodeGps(position) {
             $('#address').html(address);
         }
     });
-
 }
 
 function showMap(lat, lon) {
