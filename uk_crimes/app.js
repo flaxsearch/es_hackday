@@ -42,7 +42,7 @@ function setLocationByGoogleMaps(latlng)
 }
 
 $(document).ready(function () {
-    total = 1380876;
+    total = 1380876; // FIXME
     query = buildQuery();
     setLocationBySensor(query);
     $('#address-lookup').submit(function () {
@@ -69,7 +69,7 @@ function buildQuery() {
                 "query": {
                     "range": {
                         "date": {
-                            "gte": year + "-0" + month
+                            "gte": year + "-" + (month < 10 ? "0" : "") + month
                         }
                     }
                 }
